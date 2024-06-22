@@ -59,7 +59,7 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
   /**
    * 设置使用X5内核
    */
-  public void useX5() {
+  static public void useX5() {
     isUseX5 = true;
   }
 
@@ -67,14 +67,14 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
    * 是否使用腾讯X5配合(获取之后每次都会重置为false)
    * @return
    */
-  public boolean isUseX5() {
+  static public boolean isUseX5() {
     boolean en = isUseX5;
     isUseX5 = false;
     return en;
   }
 
-  protected static class ShouldOverrideUrlLoadingLock {
-    protected enum ShouldOverrideCallbackState {
+  public static class ShouldOverrideUrlLoadingLock {
+    public enum ShouldOverrideCallbackState {
       UNDECIDED,
       SHOULD_OVERRIDE,
       DO_NOT_OVERRIDE,
@@ -100,7 +100,7 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     }
   }
 
-  protected static final ShouldOverrideUrlLoadingLock shouldOverrideUrlLoadingLock = new ShouldOverrideUrlLoadingLock();
+  public static final ShouldOverrideUrlLoadingLock shouldOverrideUrlLoadingLock = new ShouldOverrideUrlLoadingLock();
 
   private enum MimeType {
     DEFAULT("*/*"),

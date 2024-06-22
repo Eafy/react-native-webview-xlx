@@ -1,4 +1,4 @@
-package com.reactnativecommunity.webview;
+package com.reactnativecommunity.webview.x5;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
@@ -16,6 +16,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.reactnativecommunity.webview.BasicAuthCredential;
+import com.reactnativecommunity.webview.RNCWebViewModule;
 import com.reactnativecommunity.webview.events.TopHttpErrorEvent;
 import com.reactnativecommunity.webview.events.TopLoadingErrorEvent;
 import com.reactnativecommunity.webview.events.TopLoadingFinishEvent;
@@ -40,7 +42,8 @@ public class RNCX5WebViewClient extends WebViewClient {
   ReadableArray mUrlPrefixesForDefaultIntent;
   protected RNCX5WebView.ProgressChangedFilter progressChangedFilter = null;
   protected @Nullable String ignoreErrFailedForThisURL = null;
-  protected @Nullable BasicAuthCredential basicAuthCredential = null;
+  protected @Nullable
+  BasicAuthCredential basicAuthCredential = null;
 
   public void setIgnoreErrFailedForThisURL(@Nullable String url) {
     ignoreErrFailedForThisURL = url;

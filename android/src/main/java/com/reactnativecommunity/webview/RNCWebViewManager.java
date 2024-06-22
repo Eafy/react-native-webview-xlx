@@ -14,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+
+import com.reactnativecommunity.webview.x5.RNCX5WebChromeClient;
+import com.reactnativecommunity.webview.x5.RNCX5WebView;
+import com.reactnativecommunity.webview.x5.RNCX5WebViewClient;
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
 import com.tencent.smtt.sdk.CookieManager;
 import com.tencent.smtt.sdk.DownloadListener;
@@ -155,8 +159,6 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
       setAllowUniversalAccessFromFileURLs(webView, false);
     }
     setMixedContentMode(webView, "never");
-
-    webView.getX5WebViewExtension().setVerticalTrackDrawable(null);   //X5
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
     webView.setLayoutParams(
@@ -859,12 +861,3 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
   }
 }
 
-class BasicAuthCredential {
-  String username;
-  String password;
-
-  BasicAuthCredential(String username, String password) {
-    this.username = username;
-    this.password = password;
-  }
-}

@@ -1,4 +1,4 @@
-package com.reactnativecommunity.webview;
+package com.reactnativecommunity.webview.x5;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -23,6 +23,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.scroll.OnScrollDispatchHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
+import com.reactnativecommunity.webview.BasicAuthCredential;
 import com.reactnativecommunity.webview.events.TopMessageEvent;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
@@ -61,7 +62,7 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener {
   private OnScrollDispatchHelper mOnScrollDispatchHelper;
   protected boolean hasScrollEvent = false;
   protected boolean nestedScrollEnabled = false;
-  protected ProgressChangedFilter progressChangedFilter;
+  public ProgressChangedFilter progressChangedFilter;
 
   /**
    * WebView must be created with an context of the current activity
@@ -73,6 +74,7 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener {
     super(reactContext);
     this.createCatalystInstance();
     progressChangedFilter = new ProgressChangedFilter();
+    getX5WebViewExtension().setVerticalTrackDrawable(null);   //X5
   }
 
   public void setIgnoreErrFailedForThisURL(String url) {
@@ -205,7 +207,7 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener {
     messagingModuleName = moduleName;
   }
 
-  protected void evaluateJavascriptWithFallback(String script) {
+  public void evaluateJavascriptWithFallback(String script) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       evaluateJavascript(script, null);
       return;
@@ -314,7 +316,7 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener {
     eventDispatcher.dispatchEvent(event);
   }
 
-  protected void cleanupCallbacksAndDestroy() {
+  public void cleanupCallbacksAndDestroy() {
     setWebViewClient(null);
     destroy();
   }
@@ -344,7 +346,7 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener {
     }
   }
 
-  protected static class ProgressChangedFilter {
+  public static class ProgressChangedFilter {
     private boolean waitingForCommandLoadUrl = false;
 
     public void setWaitingForCommandLoadUrl(boolean isWaiting) {

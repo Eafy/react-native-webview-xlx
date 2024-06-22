@@ -1,42 +1,41 @@
-package com.reactnativecommunity.webview;
+package com.reactnativecommunity.webview.dft;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.Manifest;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.webkit.ConsoleMessage;
+import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
-
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
-
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.modules.core.PermissionAwareActivity;
-import com.facebook.react.modules.core.PermissionListener;
+import com.reactnativecommunity.webview.RNCWebViewManager;
 import com.reactnativecommunity.webview.events.TopLoadingProgressEvent;
-import com.tencent.smtt.export.external.interfaces.ConsoleMessage;
-import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
-import com.tencent.smtt.export.external.interfaces.PermissionRequest;
-import com.tencent.smtt.sdk.ValueCallback;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebView;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEventListener {
+public class RNCWebChromeClient extends WebChromeClient implements LifecycleEventListener {
   protected static final FrameLayout.LayoutParams FULLSCREEN_LAYOUT_PARAMS = new FrameLayout.LayoutParams(
-    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER);
 
   @RequiresApi(api = Build.VERSION_CODES.KITKAT)
   protected static final int FULLSCREEN_SYSTEM_UI_VISIBILITY = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
@@ -53,7 +52,7 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
   protected View mWebView;
 
   protected View mVideoView;
-  protected com.tencent.smtt.export.external.interfaces.IX5WebChromeClient.CustomViewCallback mCustomViewCallback;
+  protected WebChromeClient.CustomViewCallback mCustomViewCallback;
 
   /*
    * - Permissions -
@@ -67,7 +66,7 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
   protected List<String> grantedPermissions;
 
   // Webview geolocation permission callback
-  protected GeolocationPermissionsCallback geolocationPermissionCallback;
+  protected GeolocationPermissions.Callback geolocationPermissionCallback;
   // Webview geolocation permission origin callback
   protected String geolocationPermissionOrigin;
 
@@ -76,12 +75,12 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
   // Pending Android permissions for the next request
   protected List<String> pendingPermissions = new ArrayList<>();
 
-  protected RNCX5WebView.ProgressChangedFilter progressChangedFilter = null;
+  protected RNCWebView.ProgressChangedFilter progressChangedFilter = null;
 
   // True if protected media should be allowed, false otherwise
   protected boolean mAllowsProtectedMedia = false;
 
-  public RNCX5WebChromeClient(ReactContext reactContext, WebView webView) {
+  public RNCWebChromeClient(ReactContext reactContext, WebView webView) {
     this.mReactContext = reactContext;
     this.mWebView = webView;
   }
@@ -120,7 +119,7 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
     event.putBoolean("canGoBack", webView.canGoBack());
     event.putBoolean("canGoForward", webView.canGoForward());
     event.putDouble("progress", (float) newProgress / 100);
-    ((RNCX5WebView) webView).dispatchEvent(
+    ((RNCWebView) webView).dispatchEvent(
       webView,
       new TopLoadingProgressEvent(
         webView.getId(),
@@ -180,8 +179,10 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
     requestPermissions(requestedAndroidPermissions);
   }
 
+
   @Override
-  public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissionsCallback callback) {
+  public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+
     if (ContextCompat.checkSelfPermission(mReactContext, Manifest.permission.ACCESS_FINE_LOCATION)
       != PackageManager.PERMISSION_GRANTED) {
 
@@ -311,7 +312,7 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
     RNCWebViewManager.getModule(mReactContext).startPhotoPickerIntent(filePathCallback, "");
   }
 
-  public void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType, String capture) {
+  protected void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType, String capture) {
     RNCWebViewManager.getModule(mReactContext).startPhotoPickerIntent(filePathCallback, acceptType);
   }
 
@@ -340,7 +341,7 @@ public class RNCX5WebChromeClient extends WebChromeClient implements LifecycleEv
     return (ViewGroup) mReactContext.getCurrentActivity().findViewById(android.R.id.content);
   }
 
-  public void setProgressChangedFilter(RNCX5WebView.ProgressChangedFilter filter) {
+  public void setProgressChangedFilter(RNCWebView.ProgressChangedFilter filter) {
     progressChangedFilter = filter;
   }
 
