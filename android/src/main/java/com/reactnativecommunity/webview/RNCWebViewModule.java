@@ -54,6 +54,25 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
   private File outputVideo;
   private DownloadManager.Request downloadRequest;
 
+  public static boolean isUseX5 = false;   //是否使用腾讯X5内核
+
+  /**
+   * 设置使用X5内核
+   */
+  public void useX5() {
+    isUseX5 = true;
+  }
+
+  /**
+   * 是否使用腾讯X5配合(获取之后每次都会重置为false)
+   * @return
+   */
+  public boolean isUseX5() {
+    boolean en = isUseX5;
+    isUseX5 = false;
+    return en;
+  }
+
   protected static class ShouldOverrideUrlLoadingLock {
     protected enum ShouldOverrideCallbackState {
       UNDECIDED,

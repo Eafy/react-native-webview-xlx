@@ -11,6 +11,8 @@
 #import <React/RCTDefines.h>
 #import "RNCWebView.h"
 
+static BOOL g_webview_isUseX5 = false;
+
 @interface RNCWebViewManager () <RNCWebViewDelegate>
 @end
 
@@ -51,6 +53,18 @@ RCT_EXPORT_MODULE()
   RNCWebView *webView = [RNCWebView new];
   webView.delegate = self;
   return webView;
+}
+
+/// 设置使用X5内核
++ (void)useX5 {
+    g_webview_isUseX5 = YES;
+}
+
+/// 是否使用腾讯X5配合(获取之后每次都会重置为false)
++ (BOOL)isUseX5 {
+    BOOL en = g_webview_isUseX5;
+    g_webview_isUseX5 = NO;
+    return en;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)

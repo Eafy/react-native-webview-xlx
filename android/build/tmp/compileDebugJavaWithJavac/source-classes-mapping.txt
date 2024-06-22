@@ -1,3 +1,7 @@
+com/reactnativecommunity/webview/RNCX5WebChromeClient.java
+ com.reactnativecommunity.webview.RNCX5WebChromeClient
+com/reactnativecommunity/webview/RNCX5WebViewClient.java
+ com.reactnativecommunity.webview.RNCX5WebViewClient
 com/reactnativecommunity/webview/BuildConfig.java
  com.reactnativecommunity.webview.BuildConfig
 com/reactnativecommunity/webview/RNCWebViewManager.java
@@ -6,13 +10,6 @@ com/reactnativecommunity/webview/RNCWebViewManager.java
  com.reactnativecommunity.webview.RNCWebViewManager$1
  com.reactnativecommunity.webview.RNCWebViewManager$2
  com.reactnativecommunity.webview.RNCWebViewManager$3
- com.reactnativecommunity.webview.RNCWebViewManager$4
- com.reactnativecommunity.webview.RNCWebViewManager$RNCWebChromeClient
- com.reactnativecommunity.webview.RNCWebViewManager$RNCWebView
- com.reactnativecommunity.webview.RNCWebViewManager$RNCWebView$1
- com.reactnativecommunity.webview.RNCWebViewManager$RNCWebView$ProgressChangedFilter
- com.reactnativecommunity.webview.RNCWebViewManager$RNCWebView$RNCWebViewBridge
- com.reactnativecommunity.webview.RNCWebViewManager$RNCWebViewClient
 com/reactnativecommunity/webview/RNCWebViewModule.java
  com.reactnativecommunity.webview.RNCWebViewModule
  com.reactnativecommunity.webview.RNCWebViewModule$1
@@ -22,6 +19,11 @@ com/reactnativecommunity/webview/RNCWebViewModule.java
  com.reactnativecommunity.webview.RNCWebViewModule$ShouldOverrideUrlLoadingLock$ShouldOverrideCallbackState
 com/reactnativecommunity/webview/URLUtil.java
  com.reactnativecommunity.webview.URLUtil
+com/reactnativecommunity/webview/RNCX5WebView.java
+ com.reactnativecommunity.webview.RNCX5WebView
+ com.reactnativecommunity.webview.RNCX5WebView$1
+ com.reactnativecommunity.webview.RNCX5WebView$ProgressChangedFilter
+ com.reactnativecommunity.webview.RNCX5WebView$RNCWebViewBridge
 com/reactnativecommunity/webview/RNCWebViewFileProvider.java
  com.reactnativecommunity.webview.RNCWebViewFileProvider
 com/reactnativecommunity/webview/WebViewConfig.java
