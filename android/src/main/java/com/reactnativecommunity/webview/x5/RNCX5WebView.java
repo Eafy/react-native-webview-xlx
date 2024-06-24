@@ -108,7 +108,9 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener,
     mReactContext = reactContext;
     this.createCatalystInstance();
     progressChangedFilter = new ProgressChangedFilter();
-    getX5WebViewExtension().setVerticalTrackDrawable(null);   //X5
+    if (getX5WebViewExtension() != null) {
+      getX5WebViewExtension().setVerticalTrackDrawable(null);   //X5
+    }
 
     WebSettings settings = getSettings();
     settings.setBuiltInZoomControls(true);
