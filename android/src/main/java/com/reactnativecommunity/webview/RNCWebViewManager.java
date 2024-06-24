@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 import com.reactnativecommunity.webview.dft.RNCWebView;
+import com.reactnativecommunity.webview.protocal.RNCXLXWebviewProtocol;
 import com.reactnativecommunity.webview.x5.RNCX5WebView;
 import android.webkit.WebSettings;
 
@@ -131,54 +132,43 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
   @Override
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
-    RNCWebView webView = (RNCWebView)createRNCWebViewInstance(reactContext);
-    webView.setupWebChromeClient(reactContext, mAllowsFullscreenVideo, mAllowsProtectedMedia);
-    reactContext.addLifecycleEventListener((RNCWebView)webView);
+    ViewGroup viewGroup = createRNCWebViewInstance(reactContext);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)viewGroup;
+    protocol.setupWebChromeClient(reactContext, mAllowsFullscreenVideo, mAllowsProtectedMedia);
+    protocol.addLifecycleEventListener(reactContext);
 
-    WebSettings settings = webView.getSettings();
-    settings.setBuiltInZoomControls(true);
-    settings.setDisplayZoomControls(false);
-    settings.setDomStorageEnabled(true);
-    settings.setSupportMultipleWindows(true);
-
-    settings.setAllowFileAccess(false);
-    settings.setAllowContentAccess(false);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      settings.setAllowFileAccessFromFileURLs(false);
-      setAllowUniversalAccessFromFileURLs(webView, false);
-    }
-    setMixedContentMode(webView, "never");
+    setMixedContentMode(viewGroup, "never");
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
-    webView.setLayoutParams(
+    viewGroup.setLayoutParams(
       new LayoutParams(LayoutParams.MATCH_PARENT,
         LayoutParams.MATCH_PARENT));
 
-    return webView;
+    return viewGroup;
   }
 
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setJavaScriptEnabled(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setJavaScriptEnabled(enabled);
   }
 
   @ReactProp(name = "setBuiltInZoomControls")
   public void setBuiltInZoomControls(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setBuiltInZoomControls(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setBuiltInZoomControls(enabled);
   }
 
   @ReactProp(name = "setDisplayZoomControls")
   public void setDisplayZoomControls(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setDisplayZoomControls(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setDisplayZoomControls(enabled);
   }
 
   @ReactProp(name = "setSupportMultipleWindows")
   public void setSupportMultipleWindows(ViewGroup view, boolean enabled){
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setSupportMultipleWindows(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setSupportMultipleWindows(enabled);
   }
 
   @ReactProp(name = "showsHorizontalScrollIndicator")
@@ -193,20 +183,20 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
 
   @ReactProp(name = "downloadingMessage")
   public void setDownloadingMessage(ViewGroup view, String message) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
     protocol.setDownloadingMessage(message);
   }
 
   @ReactProp(name = "lackPermissionToDownloadMessage")
   public void setLackPermissionToDownlaodMessage(ViewGroup view, String message) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
     protocol.setLackPermissionToDownlaodMessage(message);
   }
 
   @ReactProp(name = "cacheEnabled")
   public void setCacheEnabled(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setCacheMode(enabled ? WebSettings.LOAD_DEFAULT : WebSettings.LOAD_NO_CACHE);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setCacheMode(enabled ? WebSettings.LOAD_DEFAULT : WebSettings.LOAD_NO_CACHE);
   }
 
   @ReactProp(name = "cacheMode")
@@ -227,8 +217,8 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
         cacheMode = WebSettings.LOAD_DEFAULT;
         break;
     }
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setCacheMode(cacheMode);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setCacheMode(cacheMode);
   }
 
   @ReactProp(name = "androidHardwareAccelerationDisabled")
@@ -273,34 +263,35 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
 
   @ReactProp(name = "nestedScrollEnabled")
   public void setNestedScrollEnabled(ViewGroup view, boolean enabled) {
-    ((RNCWebView) view).setNestedScrollEnabled(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setNestedScrollEnabled(enabled);
   }
 
   @ReactProp(name = "thirdPartyCookiesEnabled")
   public void setThirdPartyCookiesEnabled(ViewGroup view, boolean enabled) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+      RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
       protocol.setAcceptThirdPartyCookies(enabled);
     }
   }
 
   @ReactProp(name = "textZoom")
   public void setTextZoom(ViewGroup view, int value) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setTextZoom(value);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setTextZoom(value);
   }
 
   @ReactProp(name = "scalesPageToFit")
   public void setScalesPageToFit(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setLoadWithOverviewMode(enabled);
-    protocol.getSettings().setUseWideViewPort(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setLoadWithOverviewMode(enabled);
+    protocol.getSettingsProtocol().setUseWideViewPort(enabled);
   }
 
   @ReactProp(name = "domStorageEnabled")
   public void setDomStorageEnabled(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setDomStorageEnabled(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setDomStorageEnabled(enabled);
   }
 
   @ReactProp(name = "userAgent")
@@ -327,76 +318,82 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
   }
 
   protected void setUserAgentString(ViewGroup view) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
     if(mUserAgent != null) {
-      protocol.getSettings().setUserAgentString(mUserAgent);
+      protocol.getSettingsProtocol().setUserAgentString(mUserAgent);
     } else if(mUserAgentWithApplicationName != null) {
-      protocol.getSettings().setUserAgentString(mUserAgentWithApplicationName);
+      protocol.getSettingsProtocol().setUserAgentString(mUserAgentWithApplicationName);
     } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       // handle unsets of `userAgent` prop as long as device is >= API 17
-      protocol.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(view.getContext()));
+      protocol.getSettingsProtocol().setUserAgentString(WebSettings.getDefaultUserAgent(view.getContext()));
     }
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @ReactProp(name = "mediaPlaybackRequiresUserAction")
   public void setMediaPlaybackRequiresUserAction(ViewGroup view, boolean requires) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setMediaPlaybackRequiresUserGesture(requires);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setMediaPlaybackRequiresUserGesture(requires);
   }
 
   @ReactProp(name = "javaScriptCanOpenWindowsAutomatically")
   public void setJavaScriptCanOpenWindowsAutomatically(ViewGroup view, boolean enabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setJavaScriptCanOpenWindowsAutomatically(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setJavaScriptCanOpenWindowsAutomatically(enabled);
   }
 
   @ReactProp(name = "allowFileAccessFromFileURLs")
   public void setAllowFileAccessFromFileURLs(ViewGroup view, boolean allow) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setAllowFileAccessFromFileURLs(allow);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setAllowFileAccessFromFileURLs(allow);
   }
 
   @ReactProp(name = "allowUniversalAccessFromFileURLs")
   public void setAllowUniversalAccessFromFileURLs(ViewGroup view, boolean allow) {
     RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
-    ((WebSettings)protocol.getSettings()).setAllowUniversalAccessFromFileURLs(allow);
+    protocol.getSettingsProtocol().setAllowUniversalAccessFromFileURLs(allow);
   }
 
   @ReactProp(name = "saveFormDataDisabled")
   public void setSaveFormDataDisabled(ViewGroup view, boolean disable) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setSaveFormData(!disable);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setSaveFormData(!disable);
   }
 
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(ViewGroup view, @Nullable String injectedJavaScript) {
-    ((RNCWebView) view).setInjectedJavaScript(injectedJavaScript);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setInjectedJavaScript(injectedJavaScript);
   }
 
   @ReactProp(name = "injectedJavaScriptBeforeContentLoaded")
   public void setInjectedJavaScriptBeforeContentLoaded(ViewGroup view, @Nullable String injectedJavaScriptBeforeContentLoaded) {
-    ((RNCWebView) view).setInjectedJavaScriptBeforeContentLoaded(injectedJavaScriptBeforeContentLoaded);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setInjectedJavaScriptBeforeContentLoaded(injectedJavaScriptBeforeContentLoaded);
   }
 
   @ReactProp(name = "injectedJavaScriptForMainFrameOnly")
   public void setInjectedJavaScriptForMainFrameOnly(ViewGroup view, boolean enabled) {
-    ((RNCWebView) view).setInjectedJavaScriptForMainFrameOnly(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setInjectedJavaScriptForMainFrameOnly(enabled);
   }
 
   @ReactProp(name = "injectedJavaScriptBeforeContentLoadedForMainFrameOnly")
   public void setInjectedJavaScriptBeforeContentLoadedForMainFrameOnly(ViewGroup view, boolean enabled) {
-    ((RNCWebView) view).setInjectedJavaScriptBeforeContentLoadedForMainFrameOnly(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setInjectedJavaScriptBeforeContentLoadedForMainFrameOnly(enabled);
   }
 
   @ReactProp(name = "messagingEnabled")
   public void setMessagingEnabled(ViewGroup view, boolean enabled) {
-    ((RNCWebView) view).setMessagingEnabled(enabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setMessagingEnabled(enabled);
   }
 
   @ReactProp(name = "messagingModuleName")
   public void setMessagingModuleName(ViewGroup view, String moduleName) {
-    ((RNCWebView) view).setMessagingModuleName(moduleName);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setMessagingModuleName(moduleName);
   }
 
   @ReactProp(name = "incognito")
@@ -406,32 +403,33 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
       return;
     }
 
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
     protocol.removeAllCookie();
 
     // Disable caching
-    protocol.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    ((RNCWebView) view).clearHistory();
-    ((RNCWebView) view).clearCache(true);
+    protocol.getSettingsProtocol().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    protocol.clearHistory();
+    protocol.clearCache(true);
 
     // No form data or autofill enabled
-    ((RNCWebView) view).clearFormData();
-    protocol.getSettings().setSavePassword(false);
-    protocol.getSettings().setSaveFormData(false);
+    protocol.clearFormData();
+    protocol.getSettingsProtocol().setSavePassword(false);
+    protocol.getSettingsProtocol().setSaveFormData(false);
   }
 
   @ReactProp(name = "source")
   public void setSource(ViewGroup view, @Nullable ReadableMap source) {
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
     if (source != null) {
       if (source.hasKey("html")) {
         String html = source.getString("html");
         String baseUrl = source.hasKey("baseUrl") ? source.getString("baseUrl") : "";
-        ((RNCWebView) view).loadDataWithBaseURL(baseUrl, html, HTML_MIME_TYPE, HTML_ENCODING, null);
+        protocol.loadDataWithBaseURL(baseUrl, html, HTML_MIME_TYPE, HTML_ENCODING, null);
         return;
       }
       if (source.hasKey("uri")) {
         String url = source.getString("uri");
-        String previousUrl = ((RNCWebView) view).getUrl();
+        String previousUrl = protocol.getUrl();
         if (previousUrl != null && previousUrl.equals(url)) {
           return;
         }
@@ -450,7 +448,7 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
             if (postData == null) {
               postData = new byte[0];
             }
-            ((RNCWebView) view).postUrl(url, postData);
+            protocol.postUrl(url, postData);
             return;
           }
         }
@@ -458,23 +456,22 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
         if (source.hasKey("headers")) {
           ReadableMap headers = source.getMap("headers");
           ReadableMapKeySetIterator iter = headers.keySetIterator();
-          RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
           while (iter.hasNextKey()) {
             String key = iter.nextKey();
             if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
-              if (protocol.getSettings() != null) {
-                protocol.getSettings().setUserAgentString(headers.getString(key));
+              if (protocol.getWebSettings() != null) {
+                protocol.getSettingsProtocol().setUserAgentString(headers.getString(key));
               }
             } else {
               headerMap.put(key, headers.getString(key));
             }
           }
         }
-        ((RNCWebView) view).loadUrl(url, headerMap);
+        protocol.loadUrl(url, headerMap);
         return;
       }
     }
-    ((RNCWebView) view).loadUrl(BLANK_URL);
+    protocol.loadUrl(BLANK_URL);
   }
 
   @ReactProp(name = "basicAuthCredential")
@@ -487,25 +484,27 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
         basicAuthCredential = new BasicAuthCredential(username, password);
       }
     }
-    ((RNCWebView) view).setBasicAuthCredential(basicAuthCredential);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setBasicAuthCredential(basicAuthCredential);
   }
 
   @ReactProp(name = "onContentSizeChange")
   public void setOnContentSizeChange(ViewGroup view, boolean sendContentSizeChangeEvents) {
-    ((RNCWebView) view).setSendContentSizeChangeEvents(sendContentSizeChangeEvents);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setSendContentSizeChangeEvents(sendContentSizeChangeEvents);
   }
 
   @ReactProp(name = "mixedContentMode")
   public void setMixedContentMode(ViewGroup view, @Nullable String mixedContentMode) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       if (mixedContentMode == null || "never".equals(mixedContentMode)) {
-        protocol.getSettings().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        protocol.getSettingsProtocol().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW);
       } else if ("always".equals(mixedContentMode)) {
-        protocol.getSettings().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        protocol.getSettingsProtocol().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
       } else if ("compatibility".equals(mixedContentMode)) {
-        protocol.getSettings().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        protocol.getSettingsProtocol().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
       }
     }
   }
@@ -531,21 +530,22 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
   public void setAllowFileAccess(
     ViewGroup view,
     @Nullable Boolean allowFileAccess) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setAllowFileAccess(allowFileAccess != null && allowFileAccess);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setAllowFileAccess(allowFileAccess != null && allowFileAccess);
   }
 
   @ReactProp(name = "geolocationEnabled")
   public void setGeolocationEnabled(
     ViewGroup view,
     @Nullable Boolean isGeolocationEnabled) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setGeolocationEnabled(isGeolocationEnabled != null && isGeolocationEnabled);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setGeolocationEnabled(isGeolocationEnabled != null && isGeolocationEnabled);
   }
 
   @ReactProp(name = "onScroll")
   public void setOnScroll(ViewGroup view, boolean hasScrollEvent) {
-    ((RNCWebView) view).setHasScrollEvent(hasScrollEvent);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.setHasScrollEvent(hasScrollEvent);
   }
 
   @SuppressLint("WrongConstant")
@@ -555,9 +555,9 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
       // Switch WebView dark mode
       if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-        RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+        RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
         int forceDarkMode = enabled ? WebSettingsCompat.FORCE_DARK_ON : WebSettingsCompat.FORCE_DARK_OFF;
-        protocol.getSettings().setForceDark(forceDarkMode);
+        protocol.getSettingsProtocol().setForceDark(forceDarkMode);
       }
 
       // Set how WebView content should be darkened.
@@ -566,7 +566,7 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
       // More information about Force Dark Strategy can be found here:
       // https://developer.android.com/reference/androidx/webkit/WebSettingsCompat#setForceDarkStrategy(android.webkit.WebSettings)
       if (enabled && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)) {
-        RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+        RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
         protocol.setForceDarkStrategy(WebSettingsCompat.DARK_STRATEGY_PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING);
       }
     }
@@ -574,8 +574,8 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
 
   @ReactProp(name = "minimumFontSize")
   public void setMinimumFontSize(ViewGroup view, int fontSize) {
-    RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
-    protocol.getSettings().setMinimumFontSize(fontSize);
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
+    protocol.getSettingsProtocol().setMinimumFontSize(fontSize);
   }
 
   @ReactProp(name = "allowsProtectedMedia")
@@ -585,7 +585,7 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
     // (eg. when mAllowsFullScreenVideo changes)
     mAllowsProtectedMedia = enabled;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      RNCXLXWebviewProtocol<WebSettings> protocol = (RNCXLXWebviewProtocol)view;
+      RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)view;
       protocol.setAllowsProtectedMedia(enabled);
     }
   }
@@ -638,26 +638,25 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
 
   @Override
   public void receiveCommand(@NonNull ViewGroup rootT, String commandId, @Nullable ReadableArray args) {
-    RNCWebView root = (RNCWebView) rootT;
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)rootT;
     switch (commandId) {
       case "goBack":
-        root.goBack();
+        protocol.goBack();
         break;
       case "goForward":
-        root.goForward();
+        protocol.goForward();
         break;
       case "reload":
-        root.reload();
+        protocol.reload();
         break;
       case "stopLoading":
-        root.stopLoading();
+        protocol.stopLoading();
         break;
       case "postMessage":
         try {
-          RNCWebView reactWebView = (RNCWebView) root;
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          reactWebView.evaluateJavascriptWithFallback("(function () {" +
+          protocol.evaluateJavascriptWithFallback("(function () {" +
             "var event;" +
             "var data = " + eventInitDict.toString() + ";" +
             "try {" +
@@ -673,38 +672,38 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
         }
         break;
       case "injectJavaScript":
-        RNCWebView reactWebView = (RNCWebView) root;
-        reactWebView.evaluateJavascriptWithFallback(args.getString(0));
+        protocol.evaluateJavascriptWithFallback(args.getString(0));
         break;
       case "loadUrl":
         if (args == null) {
           throw new RuntimeException("Arguments for loading an url are null!");
         }
-        ((RNCWebView) root).progressChangedFilter.setWaitingForCommandLoadUrl(false);
-        root.loadUrl(args.getString(0));
+        protocol.setWaitingForCommandLoadUrl(false);
+        protocol.loadUrl(args.getString(0));
         break;
       case "requestFocus":
-        root.requestFocus();
+        protocol.requestViewFocus();
         break;
       case "clearFormData":
-        root.clearFormData();
+        protocol.clearFormData();
         break;
       case "clearCache":
         boolean includeDiskFiles = args != null && args.getBoolean(0);
-        root.clearCache(includeDiskFiles);
+        protocol.clearCache(includeDiskFiles);
         break;
       case "clearHistory":
-        root.clearHistory();
+        protocol.clearHistory();
         break;
     }
-    super.receiveCommand(root, commandId, args);
+    super.receiveCommand(rootT, commandId, args);
   }
 
   @Override
   public void onDropViewInstance(ViewGroup webView) {
     super.onDropViewInstance(webView);
-    ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((RNCWebView) webView);
-    ((RNCWebView) webView).cleanupCallbacksAndDestroy();
+    RNCXLXWebviewProtocol protocol = (RNCXLXWebviewProtocol)webView;
+    protocol.removeLifecycleEventListener();
+    protocol.cleanupCallbacksAndDestroy();
   }
 
   public static RNCWebViewModule getModule(ReactContext reactContext) {

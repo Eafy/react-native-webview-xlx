@@ -26,7 +26,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.webkit.WebSettingsCompat;
 
@@ -50,22 +49,25 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.reactnativecommunity.webview.BasicAuthCredential;
 import com.reactnativecommunity.webview.RNCWebViewManager;
 import com.reactnativecommunity.webview.RNCWebViewModule;
-import com.reactnativecommunity.webview.RNCXLXWebviewProtocol;
+import com.reactnativecommunity.webview.protocal.RNCXLXWebviewProtocol;
 import com.reactnativecommunity.webview.URLUtil;
 import com.reactnativecommunity.webview.events.TopMessageEvent;
-import com.reactnativecommunity.webview.x5.RNCX5WebChromeClient;
+import com.reactnativecommunity.webview.protocal.RNCXLXWebviewSettingsProtocol;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
  * to call {@link WebView#destroy} on activity destroy event and also to clear the client
  */
 public class RNCWebView extends WebView implements LifecycleEventListener,
-  RNCXLXWebviewProtocol<WebSettings> {
+  RNCXLXWebviewProtocol {
   private static final String TAG = "RNCWebViewManager";
   protected static final String JAVASCRIPT_INTERFACE = "ReactNativeWebView";
 
@@ -104,26 +106,23 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     super(reactContext);
     this.createCatalystInstance();
     progressChangedFilter = new ProgressChangedFilter();
+
+    WebSettings settings = getSettings();
+    settings.setBuiltInZoomControls(true);
+    settings.setDisplayZoomControls(false);
+    settings.setDomStorageEnabled(true);
+    settings.setSupportMultipleWindows(true);
+
+    settings.setAllowFileAccess(false);
+    settings.setAllowContentAccess(false);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      settings.setAllowFileAccessFromFileURLs(false);
+      settings.setAllowUniversalAccessFromFileURLs(false);
+    }
   }
 
   public void setIgnoreErrFailedForThisURL(String url) {
     mRNCWebViewClient.setIgnoreErrFailedForThisURL(url);
-  }
-
-  public void setBasicAuthCredential(BasicAuthCredential credential) {
-    mRNCWebViewClient.setBasicAuthCredential(credential);
-  }
-
-  public void setSendContentSizeChangeEvents(boolean sendContentSizeChangeEvents) {
-    this.sendContentSizeChangeEvents = sendContentSizeChangeEvents;
-  }
-
-  public void setHasScrollEvent(boolean hasScrollEvent) {
-    this.hasScrollEvent = hasScrollEvent;
-  }
-
-  public void setNestedScrollEnabled(boolean nestedScrollEnabled) {
-    this.nestedScrollEnabled = nestedScrollEnabled;
   }
 
   @Override
@@ -189,22 +188,6 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     return mRNCWebViewClient;
   }
 
-  public void setInjectedJavaScript(@Nullable String js) {
-    injectedJS = js;
-  }
-
-  public void setInjectedJavaScriptBeforeContentLoaded(@Nullable String js) {
-    injectedJSBeforeContentLoaded = js;
-  }
-
-  public void setInjectedJavaScriptForMainFrameOnly(boolean enabled) {
-    injectedJavaScriptForMainFrameOnly = enabled;
-  }
-
-  public void setInjectedJavaScriptBeforeContentLoadedForMainFrameOnly(boolean enabled) {
-    injectedJavaScriptBeforeContentLoadedForMainFrameOnly = enabled;
-  }
-
   protected RNCWebViewBridge createRNCWebViewBridge(RNCWebView webView) {
     return new RNCWebViewBridge(webView);
   }
@@ -214,39 +197,6 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
 
     if (reactContext != null) {
       mCatalystInstance = reactContext.getCatalystInstance();
-    }
-  }
-
-  @SuppressLint("AddJavascriptInterface")
-  public void setMessagingEnabled(boolean enabled) {
-    if (messagingEnabled == enabled) {
-      return;
-    }
-
-    messagingEnabled = enabled;
-
-    if (enabled) {
-      addJavascriptInterface(createRNCWebViewBridge(this), JAVASCRIPT_INTERFACE);
-    } else {
-      removeJavascriptInterface(JAVASCRIPT_INTERFACE);
-    }
-  }
-
-  public void setMessagingModuleName(String moduleName) {
-    messagingModuleName = moduleName;
-  }
-
-  public void evaluateJavascriptWithFallback(String script) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      evaluateJavascript(script, null);
-      return;
-    }
-
-    try {
-      loadUrl("javascript:" + URLEncoder.encode(script, "UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      // UTF-8 should always be supported
-      throw new RuntimeException(e);
     }
   }
 
@@ -345,11 +295,6 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     eventDispatcher.dispatchEvent(event);
   }
 
-  public void cleanupCallbacksAndDestroy() {
-    setWebViewClient(null);
-    destroy();
-  }
-
   @Override
   public void destroy() {
     if (mWebChromeClient != null) {
@@ -387,7 +332,169 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     }
   }
 
+  @Override
+  public String getUrl() {
+    return super.getUrl();
+  }
+
+  @Override
+  public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
+    super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+  }
+
+  @Override
+  public void postUrl(String url,  byte[] postData) {
+    super.postUrl(url, postData);
+  }
+
+  @Override
+  public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
+    super.loadUrl(url, additionalHttpHeaders);
+  }
+
+  @Override
+  public void loadUrl(String url) {
+    super.loadUrl(url);
+  }
+
+  @Override
+  public void setBasicAuthCredential(BasicAuthCredential credential) {
+    mRNCWebViewClient.setBasicAuthCredential(credential);
+  }
+
+  @Override
+  public void setSendContentSizeChangeEvents(boolean sendContentSizeChangeEvents) {
+    this.sendContentSizeChangeEvents = sendContentSizeChangeEvents;
+  }
+
+  @Override
+  public void setHasScrollEvent(boolean hasScrollEvent) {
+    this.hasScrollEvent = hasScrollEvent;
+  }
+
+  @Override
+  public void evaluateJavascriptWithFallback(String script) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      evaluateJavascript(script, null);
+      return;
+    }
+
+    try {
+      loadUrl("javascript:" + URLEncoder.encode(script, "UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      // UTF-8 should always be supported
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void setWaitingForCommandLoadUrl(boolean en) {
+    progressChangedFilter.setWaitingForCommandLoadUrl(en);
+  }
+
+  @Override
+  public void goBack() {
+    super.goBack();
+  }
+
+  @Override
+  public void goForward() {
+    super.goForward();
+  }
+
+  @Override
+  public void reload() {
+    super.reload();
+  }
+
+  @Override
+  public void stopLoading() {
+    super.stopLoading();
+  }
+
+  @Override
+  public void requestViewFocus() {
+    super.requestFocus();
+  }
+
+  @Override
+  public void clearFormData() {
+    super.clearFormData();
+  }
+
+  @Override
+  public void clearCache(boolean en) {
+    super.clearCache(en);
+  }
+
+  @Override
+  public void clearHistory() {
+    super.clearHistory();
+  }
+
+  @Override
+  public void cleanupCallbacksAndDestroy() {
+    setWebViewClient(null);
+    destroy();
+  }
+
+  @Override
+  public void setNestedScrollEnabled(boolean nestedScrollEnabled) {
+    this.nestedScrollEnabled = nestedScrollEnabled;
+  }
+
+  @Override
+  public void setInjectedJavaScript(@Nullable String js) {
+    injectedJS = js;
+  }
+
+  @Override
+  public void setInjectedJavaScriptBeforeContentLoaded(@Nullable String js) {
+    injectedJSBeforeContentLoaded = js;
+  }
+
+  @Override
+  public void setInjectedJavaScriptForMainFrameOnly(boolean enabled) {
+    injectedJavaScriptForMainFrameOnly = enabled;
+  }
+
+  @Override
+  public void setInjectedJavaScriptBeforeContentLoadedForMainFrameOnly(boolean enabled) {
+    injectedJavaScriptBeforeContentLoadedForMainFrameOnly = enabled;
+  }
+
+  @Override
+  @SuppressLint("AddJavascriptInterface")
+  public void setMessagingEnabled(boolean enabled) {
+    if (messagingEnabled == enabled) {
+      return;
+    }
+
+    messagingEnabled = enabled;
+
+    if (enabled) {
+      addJavascriptInterface(createRNCWebViewBridge(this), JAVASCRIPT_INTERFACE);
+    } else {
+      removeJavascriptInterface(JAVASCRIPT_INTERFACE);
+    }
+  }
+
+  @Override
+  public void setMessagingModuleName(String moduleName) {
+    messagingModuleName = moduleName;
+  }
+
   /*************************  RNCXLXWebviewProtocol  *********************************/
+
+  @Override
+  public void addLifecycleEventListener(ThemedReactContext reactContext) {
+    reactContext.addLifecycleEventListener(this);
+  }
+
+  @Override
+  public void removeLifecycleEventListener() {
+    ((ThemedReactContext) getContext()).removeLifecycleEventListener(this);
+  }
 
   @Override
   public void initWebViewClient() {
@@ -554,24 +661,32 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     return  mDownloadingMessage == null ? DEFAULT_LACK_PERMISSION_TO_DOWNLOAD_MESSAGE : mLackPermissionToDownloadMessage;
   }
 
-  @NonNull
   @Override
-  public WebSettings getSettings() {
-    return super.getSettings();
+  public Object getWebSettings() {
+    return (Object)getSettings();
   }
 
+  @Override
+  public RNCXLXWebviewSettingsProtocol getSettingsProtocol() {
+    return mSettingsProtocol;
+  }
+
+  @Override
   public void setDownloadingMessage(String msg) {
     mDownloadingMessage = msg;
   }
 
+  @Override
   public void setLackPermissionToDownlaodMessage(String msg) {
     mLackPermissionToDownloadMessage = msg;
   }
 
+  @Override
   public void setAcceptThirdPartyCookies(boolean en) {
     CookieManager.getInstance().setAcceptThirdPartyCookies(this, en);
   }
 
+  @Override
   public void removeAllCookie() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       CookieManager.getInstance().removeAllCookies(null);
@@ -580,6 +695,7 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     }
   }
 
+  @Override
   public void setUrlPrefixesForDefaultIntent(@Nullable ReadableArray urlPrefixesForDefaultIntent) {
     RNCWebViewClient client = getRNCWebViewClient();
     if (client != null && urlPrefixesForDefaultIntent != null) {
@@ -587,10 +703,12 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
     }
   }
 
+  @Override
   public void setForceDarkStrategy(@WebSettingsCompat.ForceDarkStrategy int forceDarkBehavior) {
     WebSettingsCompat.setForceDarkStrategy(getSettings(), WebSettingsCompat.DARK_STRATEGY_PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING);
   }
 
+  @Override
   public void setAllowsProtectedMedia(boolean en) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       WebChromeClient client = getWebChromeClient();
@@ -599,4 +717,94 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
       }
     }
   }
+
+  /*************************  RNCXLXWebviewSettingsProtocol  *********************************/
+
+  private RNCXLXWebviewSettingsProtocol mSettingsProtocol = new RNCXLXWebviewSettingsProtocol() {
+    public void setJavaScriptEnabled(boolean enabled) {
+      getSettings().setJavaScriptEnabled(enabled);
+    }
+
+    public void setBuiltInZoomControls(boolean en) {
+      getSettings().setBuiltInZoomControls(en);
+    }
+
+    public void setDisplayZoomControls(boolean en) {
+      getSettings().setDisplayZoomControls(en);
+    }
+
+    public void setSupportMultipleWindows(boolean en) {
+      getSettings().setSupportMultipleWindows(en);
+    }
+
+    public void setCacheMode(int mode) {
+      getSettings().setCacheMode(mode);
+    }
+
+    public void setTextZoom(int val) {
+      getSettings().setTextZoom(val);
+    }
+
+    public void setLoadWithOverviewMode(boolean enabled) {
+      getSettings().setLoadWithOverviewMode(enabled);
+    }
+
+    public void setUseWideViewPort(boolean enabled) {
+      getSettings().setUseWideViewPort(enabled);
+    }
+
+    public void setDomStorageEnabled(boolean enabled) {
+      getSettings().setDomStorageEnabled(enabled);
+    }
+
+    public void setUserAgentString(String str) {
+      getSettings().setUserAgentString(str);
+    }
+
+    public void setMediaPlaybackRequiresUserGesture(boolean enable) {
+      getSettings().setMediaPlaybackRequiresUserGesture(enable);
+    }
+
+    public void setJavaScriptCanOpenWindowsAutomatically(boolean enable) {
+      getSettings().setJavaScriptCanOpenWindowsAutomatically(enable);
+    }
+
+    public void setAllowFileAccessFromFileURLs(boolean enable) {
+      getSettings().setAllowFileAccessFromFileURLs(enable);
+    }
+
+    public void setAllowUniversalAccessFromFileURLs(boolean enable) {
+      getSettings().setAllowUniversalAccessFromFileURLs(enable);
+    }
+
+    public void setSaveFormData(boolean enable) {
+      getSettings().setSaveFormData(enable);
+    }
+
+    public void setSavePassword(boolean enable) {
+      getSettings().setSavePassword(enable);
+    }
+
+    public void setMixedContentMode(int val) {
+      getSettings().setMixedContentMode(val);
+    }
+
+    public void setAllowFileAccess(boolean enable) {
+      getSettings().setAllowFileAccess(enable);
+    }
+
+    public void setGeolocationEnabled(boolean enable) {
+      getSettings().setGeolocationEnabled(enable);
+    }
+
+    public void setForceDark(int val) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        getSettings().setForceDark(val);
+      }
+    }
+
+    public void setMinimumFontSize(int val) {
+      getSettings().setMinimumFontSize(val);
+    }
+  };
 }
