@@ -12,6 +12,8 @@ import java.util.Map;
 
 public interface RNCXLXWebviewProtocol {
 
+  String checkVersion();
+
   void addLifecycleEventListener(ThemedReactContext reactContext);
 
   void removeLifecycleEventListener();

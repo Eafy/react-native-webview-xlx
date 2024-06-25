@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -485,6 +486,13 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
   }
 
   /*************************  RNCXLXWebviewProtocol  *********************************/
+
+  @Override
+  public String checkVersion() {
+    String userAgentString = getSettings().getUserAgentString();
+    Log.i("Webview", "Webview Default User-Agent: " + userAgentString);
+    return userAgentString;
+  }
 
   @Override
   public void addLifecycleEventListener(ThemedReactContext reactContext) {

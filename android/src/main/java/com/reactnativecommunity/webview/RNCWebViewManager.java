@@ -118,13 +118,11 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
   protected ViewGroup createRNCWebViewInstance(ThemedReactContext reactContext) {
     if (RNCWebViewModule.isUseX5()) {
       RNCX5WebView webView = new RNCX5WebView(reactContext);
-      String userAgentString = webView.getSettings().getUserAgentString();
-      Log.i("Webview", "Webview X5 User-Agent: " + userAgentString);
+      webView.checkVersion();
       return webView;
     } else {
       RNCWebView webView = new RNCWebView(reactContext);
-      String userAgentString = webView.getSettings().getUserAgentString();
-      Log.i("Webview", "Webview Default User-Agent: " + userAgentString);
+      webView.checkVersion();
       return webView;
     }
   }
@@ -693,6 +691,9 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
         break;
       case "clearHistory":
         protocol.clearHistory();
+        break;
+      case "checkVersion":
+        protocol.checkVersion();
         break;
     }
     super.receiveCommand(rootT, commandId, args);

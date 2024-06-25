@@ -22,6 +22,7 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -32,6 +33,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
+import com.reactnativecommunity.webview.dft.RNCWebView;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +73,18 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     boolean en = isUseX5;
     isUseX5 = false;
     return en;
+  }
+
+  /**
+   * 获取Webviewb版本号
+   * @param context
+   * @return
+   */
+  static public String webviewVersion(Context context) {
+    WebView webView = new WebView(context);
+    String userAgentString = webView.getSettings().getUserAgentString();
+    Log.i("Webview", "Webview X5 User-Agent: " + userAgentString);
+    return userAgentString;
   }
 
   public static class ShouldOverrideUrlLoadingLock {

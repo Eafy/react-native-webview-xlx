@@ -340,6 +340,13 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener,
   /*************************  RNCXLXWebviewProtocol  *********************************/
 
   @Override
+  public String checkVersion() {
+    String userAgentString = getSettings().getUserAgentString();
+    Log.i("Webview", "Webview X5 User-Agent: " + userAgentString);
+    return userAgentString;
+  }
+
+  @Override
   public void addLifecycleEventListener(ThemedReactContext reactContext) {
     reactContext.addLifecycleEventListener(this);
   }
