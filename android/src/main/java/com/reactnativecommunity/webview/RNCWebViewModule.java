@@ -83,7 +83,7 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
   static public String webviewVersion(Context context) {
     WebView webView = new WebView(context);
     String userAgentString = webView.getSettings().getUserAgentString();
-    Log.i("Webview", "Webview X5 User-Agent: " + userAgentString);
+    Log.i("Webview", "Webview System User-Agent: " + userAgentString);
     return userAgentString;
   }
 

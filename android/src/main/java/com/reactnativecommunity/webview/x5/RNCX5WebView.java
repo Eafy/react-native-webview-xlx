@@ -342,7 +342,7 @@ public class RNCX5WebView extends WebView implements LifecycleEventListener,
   @Override
   public String checkVersion() {
     String userAgentString = getSettings().getUserAgentString();
-    Log.i("Webview", "Webview X5 User-Agent: " + userAgentString);
+    Log.i("Webview", "Webview use X5 User-Agent: " + userAgentString);
     return userAgentString;
   }
 

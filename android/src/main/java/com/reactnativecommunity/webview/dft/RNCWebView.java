@@ -490,7 +490,7 @@ public class RNCWebView extends WebView implements LifecycleEventListener,
   @Override
   public String checkVersion() {
     String userAgentString = getSettings().getUserAgentString();
-    Log.i("Webview", "Webview Default User-Agent: " + userAgentString);
+    Log.i("Webview", "Webview use default User-Agent: " + userAgentString);
     return userAgentString;
   }
 
