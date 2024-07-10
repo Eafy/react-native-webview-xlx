@@ -98,7 +98,6 @@ public class RNCWebViewManager extends ViewGroupManager<ViewGroup> {
   public static final String DEFAULT_LACK_PERMISSION_TO_DOWNLOAD_MESSAGE =
     "Cannot download files as permission was denied. Please provide permission to write to storage, in order to download files.";
 
-//  protected RNCX5WebChromeClient mWebChromeClient = null;
   protected boolean mAllowsFullscreenVideo = false;
   protected boolean mAllowsProtectedMedia = false;
   protected @Nullable String mUserAgent = null;

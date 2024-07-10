@@ -134,5 +134,6 @@ dependencies {
   implementation 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "androidx.webkit:webkit:$webkit_version"
-  api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+//  api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+  api project(path: ':LocalRepo:webview')
 }
