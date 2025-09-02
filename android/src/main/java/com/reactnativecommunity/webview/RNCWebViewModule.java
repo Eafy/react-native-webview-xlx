@@ -81,10 +81,15 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
    * @return
    */
   static public String webviewVersion(Context context) {
-    WebView webView = new WebView(context);
-    String userAgentString = webView.getSettings().getUserAgentString();
-    Log.i("Webview", "Webview System User-Agent: " + userAgentString);
-    return userAgentString;
+    try {
+      WebView webView = new WebView(context);
+      String userAgentString = webView.getSettings().getUserAgentString();
+      Log.i("Webview", "Webview System User-Agent: " + userAgentString);
+      return userAgentString;
+    } catch (Exception e) {
+      Log.e("WebView", "Webview get User-Agent fail: ", e);
+      return "";
+    }
   }
 
   public static class ShouldOverrideUrlLoadingLock {
